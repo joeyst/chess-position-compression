@@ -6,8 +6,11 @@ def en_passant(board):
     1..3? => Which file? 
   Returns a string of bits. 
   """
-  pass
-
+  if board.has_legal_en_passant():
+    return "1" + bin(board.ep_square % 8)[2:].zfill(3)
+  else:
+    return "0"
+  
 def castling_rights(board):
   """ 
   [castling rights] is 4 bits. 
@@ -43,3 +46,21 @@ def encode_huffman(board):
   """
   pass
   
+if __name__ == "__main__":
+  import chess 
+  def make_en_passant_position(file):
+    board = chess.Board()
+    # Won't work for h file. 
+    board.push_uci("{}2{}4".format(chr(ord(file)+1), chr(ord(file)+1)))
+    board.push_uci("h7h6")
+    board.push_uci("{}4{}5".format(chr(ord(file)+1), chr(ord(file)+1)))
+    board.push_uci("{}7{}5".format(file, file))
+    return board
+
+  print("Testing no en passant.")
+  print(en_passant(chess.Board()))
+
+  print("Testing en passant.")
+  for file in "abcdefg":
+    print("file {}:".format(file), en_passant(make_en_passant_position(file)))
+    
