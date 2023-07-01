@@ -2,30 +2,21 @@
 from utility import is_file_mirrored, huffman_encode_squares, board_metadata 
 import chess 
 
-def get_symmetry_squares_to_encode(board, do_sort=True):
+def get_symmetry_squares_to_encode(board):
   """
   Gets a list of squares required to encode when using symmetry. 
   Only four squares in symmetric positions need to be encoded, otherwise all eight. 
   """
-  squares = []
-  mirror_file_indices = get_mirror_file_indices(board)
-  non_mirror_file_indices = [file_index for file_index in range(8) if file_index not in mirror_file_indices]
-
-  for file_index in mirror_file_indices:
-    for rank_index in range(4):
+  squares = list(range(0, 32))
+  not_mirror_file_indices = get_mirror_file_indices(board, flip=True)
+  for file_index in not_mirror_file_indices:
+    for rank_index in range(4, 8):
       squares.append(chess.square(file_index, rank_index))
-
-  for file_index in non_mirror_file_indices:
-    for rank_index in range(8):
-      squares.append(chess.square(file_index, rank_index))
-
-  if do_sort:
-    squares.sort()
   return squares
 
-def get_mirror_file_indices(board):
+def get_mirror_file_indices(board, flip=False):
   """ Gets a list of files that are mirrored. """
-  return [file_index for file_index in range(8) if is_file_mirrored(board, file_index)]
+  return [file_index for file_index in range(8) if is_file_mirrored(board, file_index) ^ flip]
 
 def get_mirror_file_index_bits(board):
   """ Returns a string of bits. (8 bits.) """
@@ -42,11 +33,11 @@ def encode_board_to_huffman_symmetry(board):
 if __name__ == "__main__":
   # Testing getting symmetry squares. 
   board = chess.Board()
-  print(get_symmetry_squares_to_encode(board, do_sort=False))
-  print("len:", len(get_symmetry_squares_to_encode(board, do_sort=False)))
+  print(get_symmetry_squares_to_encode(board))
+  print("len:", len(get_symmetry_squares_to_encode(board)))
   board.push_uci("e2e4")
-  print(get_symmetry_squares_to_encode(board, do_sort=False))
-  print("len:", len(get_symmetry_squares_to_encode(board, do_sort=False)))
+  print(get_symmetry_squares_to_encode(board))
+  print("len:", len(get_symmetry_squares_to_encode(board)))
   
   # Testing encode huffman symmetry. 
   print("Testing encode huffman symmetry.")

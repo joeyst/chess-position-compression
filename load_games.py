@@ -3,7 +3,7 @@ import chess.pgn
 import random 
 from env import path 
 
-def load_random_positions(n=1000, factor=100):
+def load_random_positions(n=1000, factor=100, unique=False):
   """ 
   Loads n random positions. 
   Factor is the chance of a given position being used. 
@@ -19,7 +19,10 @@ def load_random_positions(n=1000, factor=100):
         positions.append(board.copy())
       if len(positions) >= n:
         break
-  return positions 
+  if unique:
+    fens = list(set([b.fen() for b in positions]))
+    return [chess.Board(fen) for fen in fens] 
+  return positions, len(positions) 
 
 def load_positions(n=1000):
   """ Loads first n positions. """ 
