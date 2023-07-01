@@ -32,7 +32,7 @@ def board_metadata(board):
   6-9 bits. [turn] [castling rights] [en passant] 
   Returns a string of bits. 
   """
-  pass 
+  return str(int(board.turn)) + castling_rights(board) + en_passant(board)
 
 def huffman_piece_info(board):
   """
@@ -71,4 +71,11 @@ if __name__ == "__main__":
     
   print("Testing castling rights.")
   print(castling_rights(chess.Board()))
+  
+  print("Testing board metadata.")
+  print(board_metadata(chess.Board()))
+  
+  board = chess.Board()
+  board.push_uci("e2e4")
+  print(board_metadata(board))
     
