@@ -15,7 +15,7 @@ Naturally, shorter move games will favor default square, so should try sampling 
 """
 
 from load_games import load_random_positions, load_positions, load_games 
-from huffman import encode_huffman 
+from huffman import encode_board_to_huffman 
 from fen import get_fen 
 
 def test_average_size(fn, n=1000, factor=100):
@@ -31,7 +31,7 @@ def print_averages(fn, n=1000, factor=10, iterations=10, divide_by=1):
   print("Average: {}".format(bit_sum/iterations))
 
 print("Huffman w/o optimizations")
-print_averages(encode_huffman, divide_by=8)
+print_averages(encode_board_to_huffman, divide_by=8)
 
 print("FEN")
 print_averages(get_fen)

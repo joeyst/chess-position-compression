@@ -1,6 +1,53 @@
 
 import chess 
 
+HUFFMAN_CODES = {
+  "s": "1",
+  "p": "011", 
+  "P": "010", 
+  "r": "00111", 
+  "R": "00110",
+  "n": "00101",
+  "N": "00100",
+  "b": "00011",
+  "B": "00010",
+  "q": "000011",
+  "Q": "000010",
+  "k": "000001",
+  "K": "000000"
+}
+
+def huffman_encode_squares(board, squares=None):
+  """
+  Gets the huffman encoding of the pieces at the provided list of squares. 
+  If squares is None, encodes the whole board. 
+  Returns a string of bits. 
+  """
+  if squares is None:
+    squares = chess.SQUARES 
+
+  info = ""
+  for square in squares:
+    piece = board.piece_at(square)
+    if piece is None:
+      info += HUFFMAN_CODES["s"]
+    else:
+      info += HUFFMAN_CODES[piece.symbol()]
+  return info
+
+def decode_huffman_piece_info(info):
+  """ Takes in a string of bits and returns a list of pieces and/or Nones. """
+  tuples = []
+  while info:
+    for symbol, code in HUFFMAN_CODES.items():
+      if info.startswith(code):
+        if symbol == "s":
+          tuples.append(None)
+        else:
+          tuples.append(chess.Piece.from_symbol(symbol))
+        info = info[len(code):]
+  return tuples
+
 def is_file_mirrored(board, file_index):
   """
   Returns if the file is mirrored. 
@@ -13,7 +60,7 @@ def is_file_mirrored(board, file_index):
     piece2 = board_mirror.piece_at(square)
     if piece1 is None and piece2 is None:
       continue
-    
+
     _1None_2NotNone = piece1 is None and piece2 is not None 
     _1NotNone_2None = piece1 is not None and piece2 is None
     if _1None_2NotNone or _1NotNone_2None:
