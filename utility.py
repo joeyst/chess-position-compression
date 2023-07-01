@@ -1,6 +1,30 @@
 
 import chess 
 
+def is_file_mirrored(board, file_index):
+  """
+  Returns if the file is mirrored. 
+  """
+  board_mirror = board.mirror() 
+  for rank_index in range(4):
+    square = chess.square(file_index, rank_index)
+    # If the piece type or piece color isn't the same, then it's not mirrored. 
+    piece1 = board.piece_at(square)
+    piece2 = board_mirror.piece_at(square)
+    if piece1 is None and piece2 is None:
+      continue
+    
+    _1None_2NotNone = piece1 is None and piece2 is not None 
+    _1NotNone_2None = piece1 is not None and piece2 is None
+    if _1None_2NotNone or _1NotNone_2None:
+      return False
+
+    different_types = board.piece_at(square).piece_type != board_mirror.piece_at(square).piece_type
+    different_color = board.piece_at(square).color != board_mirror.piece_at(square).color
+    if different_types or different_color:
+      return False
+  return True
+
 def en_passant(board):
   """
   [en passant] is 1-4 bits. 
@@ -62,3 +86,10 @@ if __name__ == "__main__":
   board = chess.Board()
   board.push_uci("e2e4")
   print(board_metadata(board))
+
+  # Testing is file mirrored. 
+  board = chess.Board()
+  print("is_file_mirrored:", is_file_mirrored(board, 0))
+  board.push_uci("e2e4")
+  print("is_file_mirrored:", is_file_mirrored(board, 0))
+  print("is_file_mirrored:", is_file_mirrored(board, 4))

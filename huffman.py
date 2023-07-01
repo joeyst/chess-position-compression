@@ -86,3 +86,14 @@ if __name__ == "__main__":
   print("bits:", encode_huffman(chess.Board(), option='bits'))
   print("bytes:", encode_huffman(chess.Board(), option='bytes'))
   print(encode_huffman(chess.Board(), option='binary'))
+  
+  # Testing mirror. 
+  board = chess.Board()
+  print(board)
+  board = board.mirror()
+  print(board)
+  board = chess.Board()
+  board.push_uci("e2e4")
+  print(board)
+  board = board.mirror()
+  print(board)
