@@ -1,4 +1,6 @@
 
+import chess 
+
 def en_passant(board):
   """
   [en passant] is 1-4 bits. 
@@ -106,7 +108,6 @@ def encode_huffman(board, option=None):
   return board_metadata(board) + huffman_piece_info(board) 
   
 if __name__ == "__main__":
-  import chess 
   def make_en_passant_position(file):
     board = chess.Board()
     # Won't work for h file. 
