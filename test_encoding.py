@@ -16,6 +16,7 @@ Naturally, shorter move games will favor default square, so should try sampling 
 
 from load_games import load_random_positions, load_positions, load_games 
 from huffman import encode_board_to_huffman 
+from huffman_symmetry import encode_board_to_huffman_symmetry 
 from fen import get_fen 
 
 def test_average_size(fn, n=1000, factor=100):

@@ -34,10 +34,10 @@ def get_mirror_file_index_bits(board):
 def encode_board_to_huffman_symmetry(board):
   """
   Format: [board metadata] [mirror files] [huffman piece info] 
-  70-173 bits = 21.625 bytes for standard chess game (worst case). 
+  78-181 bits = 24.5 bytes for standard chess game (worst case).
   Returns a string of bits. 
   """
-  pass
+  return board_metadata(board) + get_mirror_file_index_bits(board) + huffman_encode_squares(board, get_symmetry_squares_to_encode(board))
 
 if __name__ == "__main__":
   # Testing getting symmetry squares. 
@@ -47,4 +47,8 @@ if __name__ == "__main__":
   board.push_uci("e2e4")
   print(get_symmetry_squares_to_encode(board, do_sort=False))
   print("len:", len(get_symmetry_squares_to_encode(board, do_sort=False)))
+  
+  # Testing encode huffman symmetry. 
+  print("Testing encode huffman symmetry.")
+  print(encode_board_to_huffman_symmetry(chess.Board()))
   
