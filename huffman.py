@@ -34,6 +34,22 @@ def board_metadata(board):
   """
   return str(int(board.turn)) + castling_rights(board) + en_passant(board)
 
+HUFFMAN_CODES = {
+  "s": "1",
+  "p": "011", 
+  "P": "010", 
+  "r": "00111", 
+  "R": "00110",
+  "n": "00101",
+  "N": "00100",
+  "b": "00011",
+  "B": "00010",
+  "q": "000011",
+  "Q": "000010",
+  "k": "000001",
+  "K": "000000"
+}
+
 def huffman_piece_info(board):
   """
   64-164 bits for standard chess game. 
