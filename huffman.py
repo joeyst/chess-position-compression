@@ -20,7 +20,12 @@ def castling_rights(board):
     3 => black queenside 
   Returns a string of bits. 
   """
-  pass 
+  rights = ""
+  rights += "1" if board.has_kingside_castling_rights(chess.WHITE) else "0"
+  rights += "1" if board.has_queenside_castling_rights(chess.WHITE) else "0"
+  rights += "1" if board.has_kingside_castling_rights(chess.BLACK) else "0"
+  rights += "1" if board.has_queenside_castling_rights(chess.BLACK) else "0"
+  return rights
   
 def board_metadata(board):
   """
@@ -63,4 +68,7 @@ if __name__ == "__main__":
   print("Testing en passant.")
   for file in "abcdefg":
     print("file {}:".format(file), en_passant(make_en_passant_position(file)))
+    
+  print("Testing castling rights.")
+  print(castling_rights(chess.Board()))
     
