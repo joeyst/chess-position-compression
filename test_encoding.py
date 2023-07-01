@@ -19,7 +19,7 @@ from huffman import encode_board_to_huffman
 from huffman_symmetry import encode_board_to_huffman_symmetry 
 from fen import get_fen 
 from choose_best_huffman_encoding import encode_board_to_huffman_best_opt 
-# from huffman_default import encode_board_to_huffman_default 
+from huffman_default import encode_board_to_huffman_default 
 
 def test_average_size(fn, n=1000, factor=100):
   """ Returns the average size of the encoded boards. """ 
@@ -60,6 +60,8 @@ def compare_huffmans(fns, n=1000, factor=100, truncate_len=10, divide_by=None):
   # Sorting the dict by the number of times each permutation won. 
   for dict_str, count in sorted(better_dict.items(), key=lambda item: item[1], reverse=True):
     print("{:5} | {}".format(count, dict_str))
+    
+  return res_dict
 
 def print_averages(fn, n=1000, factor=10, iterations=10, divide_by=1, verbose=True):
   bit_sum = 0
@@ -125,8 +127,41 @@ def print_as_table(fn_list, n=1000, factor=10, iterations=10, divide_by_list=Non
       res_dict[fn.__name__] = (bit_sums, avg)
       print(build_table_string(res_dict, iterations, column_size))
       
-fn_list = [get_fen, encode_board_to_huffman, encode_board_to_huffman_symmetry, encode_board_to_huffman_best_opt]
-divide_by = [1, 8, 8, 8]
+fn_list = [get_fen, encode_board_to_huffman, encode_board_to_huffman_symmetry, encode_board_to_huffman_best_opt, encode_board_to_huffman_default]
+divide_by = [1, 8, 8, 8, 8]
 # print_as_table(fn_list, n=100, divide_by_list=divide_by)
 
-compare_huffmans(fn_list, divide_by=divide_by, n=10000, factor=10)
+# print_as_table(fn_list, n=1000, divide_by_list=divide_by, iterations=10)
+res_dict = compare_huffmans(fn_list, divide_by=divide_by, n=3000, factor=10)
+# Testing how many pieces on average are on the board. 
+positions = load_random_positions(1000, 10, unique=True)
+print(sum([len(board.piece_map()) for board in positions])/len(positions))
+# Collecting frequencies 
+freq_dict = {}
+for board in positions:
+  num_pieces = len(board.piece_map())
+  if num_pieces not in freq_dict:
+    freq_dict[num_pieces] = 0
+  freq_dict[num_pieces] += 1
+for num_pieces, count in sorted(freq_dict.items(), key=lambda item: item[0]):
+  print("{}: {}".format(num_pieces, count))
+# [0 - 10] [10 - 15] [15 - 20] [20 - 25] [25 - 32] via freq_dict 
+for l, r in [(0, 10), (10, 15), (15, 20), (20, 25), (25, 32)]:
+  print("From {} to {}: {}".format(l, r, sum([count for num_pieces, count in freq_dict.items() if l <= num_pieces < r])))
+
+# Bucketing the number of bits required by each compression scheme by whole bytes. 0-7 bits => 1 byte, 8-15 bits => 2 bytes, etc. 
+# Using res_dict. res_dict is a dictionary where the keys are the function names, and the values are lists of number of bytes required. 
+bucket_dict = {}
+for fn_name, bytes_required_list in res_dict.items():
+  bucket_dict[fn_name] = {}
+  for bytes_required in bytes_required_list:
+    if int(bytes_required) not in bucket_dict[fn_name]:
+      bucket_dict[fn_name][int(bytes_required)] = 0
+    bucket_dict[fn_name][int(bytes_required)] += 1
+    
+# Printing the bucket dict.
+for fn_name, bytes_required_dict in bucket_dict.items():
+  print("function:", fn_name)
+  for bytes_required, count in sorted(bytes_required_dict.items(), key=lambda item: item[0]):
+    print("{}: {} bytes: {}".format(fn_name, bytes_required, count))
+    
