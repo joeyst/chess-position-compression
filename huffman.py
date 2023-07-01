@@ -79,13 +79,31 @@ def decode_huffman_piece_info(info):
         info = info[len(code):]
   return tuples
 
-def encode_huffman(board):
+def return_num_bits(string):
+  return len(string)
+
+def return_num_bytes(string):
+  return len(string)/8
+
+def return_binary(string):
+  return int(string, 2)
+
+CALLBACK_DICT = {
+  "bits": return_num_bits,
+  "bytes": return_num_bytes,
+  "binary": return_binary
+}
+
+def encode_huffman(board, option=None):
   """ 
   Format: [board metadata] [huffman piece info] 
   70-173 bits = 21.625 bytes for standard chess game (worst case). 
   Returns a string of bits. 
   """
-  pass
+  if option is not None:
+    return CALLBACK_DICT[option](encode_huffman(board))
+    
+  return board_metadata(board) + huffman_piece_info(board) 
   
 if __name__ == "__main__":
   import chess 
@@ -120,4 +138,9 @@ if __name__ == "__main__":
   
   print("Testing decode huffman piece info.")
   print(decode_huffman_piece_info(huffman_piece_info(chess.Board())))
-    
+  
+  print("Testing encode huffman.")
+  print(encode_huffman(chess.Board()))
+  print("bits:", encode_huffman(chess.Board(), option='bits'))
+  print("bytes:", encode_huffman(chess.Board(), option='bytes'))
+  print(encode_huffman(chess.Board(), option='binary'))
