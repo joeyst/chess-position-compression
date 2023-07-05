@@ -4,11 +4,11 @@ Used to test the various encoding schemes for their correctness, average size, a
 Encoding schemes: 
 - FEN 
 - Huffman 
-  - Huffman w/o optimizations 
-  - Huffman w/ symmetry optimization 
-  - Huffman w/ default square optimization 
+  - (DONE) Huffman w/o optimizations 
+  - (DONE) Huffman w/ symmetry optimization 
+  - (DONE) Huffman w/ default square optimization 
   - Huffman w/ blank rank/file optimization 
-  - Huffman w/ piece-centric optimization 
+  - (DONE) Huffman w/ piece-centric optimization 
 Worth noting is, optimizations work better on some boards than others. E.g., if the sample has a lot of endgames, then 
 piece-centric will likely perform well, while default square will perform poorly. 
 Naturally, shorter move games will favor default square, so should try sampling longer games extra as one of the tests. 
@@ -20,6 +20,7 @@ from huffman_symmetry import encode_board_to_huffman_symmetry
 from fen import get_fen 
 from choose_best_huffman_encoding import encode_board_to_huffman_best_opt 
 from huffman_default import encode_board_to_huffman_default 
+from huffman_piececentric import encode_board_to_huffman_piececentric 
 
 def test_average_size(fn, n=1000, factor=100):
   """ Returns the average size of the encoded boards. """ 
@@ -75,10 +76,7 @@ def print_averages(fn, n=1000, factor=10, iterations=10, divide_by=1, verbose=Tr
     print("Average: {}".format(bit_sum/iterations))
   return bit_sums, bit_sum/iterations
 
-# Header: fn1_name          | fn2_name          | ... 
-# Each name is column_size characters long. 
 def build_table_string(res_dict, iterations=10, column_size=30):
-  # Uses res_dict to create the table. 
   table_string = "\n\n\n\n\n\n"
   for fn_name, (bit_sums, avg) in res_dict.items():
     table_string += fn_name[0:column_size-1] + " "*(column_size-min(len(fn_name), column_size-1)) + "| "
@@ -92,7 +90,6 @@ def build_table_string(res_dict, iterations=10, column_size=30):
         table_string += " "*column_size + "| "
     table_string += "\n"
   
-  # Adding a line of dashes.
   table_string += "-"*((2+column_size)*len(res_dict)) + "\n"
   # Add the average row.
   for fn_name, (bit_sums, avg) in res_dict.items():
@@ -127,11 +124,12 @@ def print_as_table(fn_list, n=1000, factor=10, iterations=10, divide_by_list=Non
       res_dict[fn.__name__] = (bit_sums, avg)
       print(build_table_string(res_dict, iterations, column_size))
       
-fn_list = [get_fen, encode_board_to_huffman, encode_board_to_huffman_symmetry, encode_board_to_huffman_best_opt, encode_board_to_huffman_default]
-divide_by = [1, 8, 8, 8, 8]
+fn_list = [get_fen, encode_board_to_huffman, encode_board_to_huffman_symmetry, encode_board_to_huffman_best_opt, encode_board_to_huffman_default, encode_board_to_huffman_piececentric]
+divide_by = [1, 8, 8, 8, 8, 8]
 # print_as_table(fn_list, n=100, divide_by_list=divide_by)
 
 # print_as_table(fn_list, n=1000, divide_by_list=divide_by, iterations=10)
+"""
 res_dict = compare_huffmans(fn_list, divide_by=divide_by, n=3000, factor=10)
 # Testing how many pieces on average are on the board. 
 positions = load_random_positions(1000, 10, unique=True)
@@ -149,8 +147,6 @@ for num_pieces, count in sorted(freq_dict.items(), key=lambda item: item[0]):
 for l, r in [(0, 10), (10, 15), (15, 20), (20, 25), (25, 32)]:
   print("From {} to {}: {}".format(l, r, sum([count for num_pieces, count in freq_dict.items() if l <= num_pieces < r])))
 
-# Bucketing the number of bits required by each compression scheme by whole bytes. 0-7 bits => 1 byte, 8-15 bits => 2 bytes, etc. 
-# Using res_dict. res_dict is a dictionary where the keys are the function names, and the values are lists of number of bytes required. 
 bucket_dict = {}
 for fn_name, bytes_required_list in res_dict.items():
   bucket_dict[fn_name] = {}
@@ -164,4 +160,4 @@ for fn_name, bytes_required_dict in bucket_dict.items():
   print("function:", fn_name)
   for bytes_required, count in sorted(bytes_required_dict.items(), key=lambda item: item[0]):
     print("{}: {} bytes: {}".format(fn_name, bytes_required, count))
-    
+"""

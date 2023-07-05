@@ -17,6 +17,12 @@ HUFFMAN_CODES = {
   "K": "000000"
 }
 
+def huffman_encode_square(board, square):
+  if board.piece_at(square) is None:
+    return HUFFMAN_CODES["s"]
+  else:
+    return HUFFMAN_CODES[board.piece_at(square).symbol()]
+
 def huffman_encode_squares(board, squares=None):
   """
   Gets the huffman encoding of the pieces at the provided list of squares. 
@@ -26,14 +32,7 @@ def huffman_encode_squares(board, squares=None):
   if squares is None:
     squares = chess.SQUARES 
 
-  info = ""
-  for square in squares:
-    piece = board.piece_at(square)
-    if piece is None:
-      info += HUFFMAN_CODES["s"]
-    else:
-      info += HUFFMAN_CODES[piece.symbol()]
-  return info
+  return "".join([huffman_encode_square(board, square) for square in squares])
 
 def decode_huffman_piece_info(info):
   """ Takes in a string of bits and returns a list of pieces and/or Nones. """

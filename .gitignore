@@ -1,2 +1,5 @@
 env.py
 __pycache__/*
+num_unique_perms.py
+huff_comparisons.txt
+huffman_600000_games_avg_bits.txt
